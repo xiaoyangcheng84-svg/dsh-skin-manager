@@ -1,6 +1,6 @@
 {
   "name": "dsh-skin-manager",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Dynamic skin manager for the dsh web GUI: discovers every installed skin (packages with skin.json), lets you toggle the active skin from a dedicated Settings page, mutually exclusive, hot-reloaded without restart",
   "license": "MIT",
   "author": "xiaoyangcheng84-svg",
