@@ -13,8 +13,11 @@ without restarting `dsh web`.
 ## Features
 
 - **Dynamic discovery** — scans the web profile's `node_modules` for packages
-  with `skin.json` + prebuilt `lib/client.js`. Newly installed skins appear
-  automatically; no registry regeneration, no code changes.
+  with `skin.json` + prebuilt `lib/client.js`, and also recognizes market
+  themes without `skin.json` (a client bundle plus a `cordis.patch.yml` that
+  inserts a theme/skin loader row, e.g. `dsh-skin` / Codex-style skin or
+  `dsh-kimino-theme`). Newly installed skins appear automatically; no registry
+  regeneration, no code changes.
 - **Dedicated settings page** — a `settings.section` entry (id `skins`,
   order 20) in the settings sidebar, next to General / Models.
 - **One-click apply** — pick a skin and click **Apply**; the profile patch is
@@ -54,6 +57,27 @@ Any package is recognized as a skin when:
   `tagline`, optional `wiring.id` — the same fields used by
   dsh-deep-whale / dsh-web-ui skins), and
 - it ships a prebuilt client bundle (`exports["./client"]` or `lib/client.js`).
+
+A market theme without `skin.json` is also recognized when:
+
+- it has `dsh.client` and `dsh.bundle.patch`,
+- its `cordis.patch.yml` contains a simple `insert` row,
+- the package name, row id, or (for immediately-loaded client bundles)
+  description/keywords mention theme/skin, and
+- it ships a prebuilt client bundle.
+
+## dsh-market coordination
+
+When dsh-market is installed, applying a skin from this manager also:
+
+- rewrites the same `cordis.patch.yml` managed section (boot persistence),
+- updates dsh-market's `.dsh-market/state.json` so it cannot re-disable the
+  chosen skin at boot,
+- unmounts stale dsh-market hot mounts that would otherwise overlap the newly
+  applied skin, and
+- syncs dsh-market's in-memory disabled state before rewriting the patch, so
+  the market's self-healing guard cannot immediately re-disable the skin you
+  just applied — no manual "use" click in the market is needed.
 
 ## How switching works
 

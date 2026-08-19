@@ -10,8 +10,10 @@
 ## 特性
 
 - **动态发现**：扫描 web profile 的 `node_modules`，找出所有带 `skin.json`
-  和预构建 `lib/client.js` 的包。新装的皮肤自动出现，无需重新生成清单、
-  无需改代码。
+  和预构建 `lib/client.js` 的包；也能识别市场下载的**无 skin.json 主题**
+  （带 client bundle 且 `cordis.patch.yml` 插入 theme/skin 行，例如
+  `dsh-skin` / Codex 风格皮肤、`dsh-kimino-theme`）。新装的皮肤自动出现，
+  无需重新生成清单、无需改代码。
 - **独立设置页**：注册 `settings.section`（id `skins`，order 20），出现在
   设置侧栏，与「通用」「模型」平级。
 - **一键应用**：选中皮肤点「应用」，profile patch 被重写，DSH 配置 watcher
@@ -47,6 +49,25 @@ dsh plugin --profile web add github:xiaoyangcheng84-svg/dsh-skin-manager
 - 带 `skin.json`（`id`、`name`、`package`、`accent`、`bodyAttr`、
   `tagline`，可选 `wiring.id`——与 dsh-deep-whale / dsh-web-ui 皮肤字段一致）
 - 带预构建 client bundle（`exports["./client"]` 或 `lib/client.js`）
+
+没有 `skin.json` 的市场主题也会被识别，条件如下：
+
+- 有 `dsh.client` 和 `dsh.bundle.patch`
+- `cordis.patch.yml` 里是简单的 `insert` 行
+- 包名、loader 行 id，或（immediately 加载的 client bundle）描述/关键词
+  包含 theme/skin
+- 带预构建 client bundle
+
+## 与插件市场（dsh-market）的联动
+
+安装 dsh-market 时，用本管理器应用皮肤会同时：
+
+- 重写 `cordis.patch.yml` 的 managed 段（重启后仍生效）
+- 更新 dsh-market 的 `.dsh-market/state.json`，防止它在下次启动时把刚
+  选中的皮肤再禁用
+- 卸载 dsh-market 残留的 hot mount，避免多个皮肤叠在一起
+- 在改写 patch 前先同步 dsh-market 的内存禁用状态，防止市场的自愈逻辑
+  把你刚应用的皮肤立刻又禁用掉——不需要再手动去市场里点“使用”
 
 ## 切换原理
 
